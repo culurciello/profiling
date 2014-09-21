@@ -19,11 +19,11 @@ network:add(nn.SpatialMaxPooling(ss1,ss1,ss1,ss1))
 network:add(nn.Threshold())
 
 -- total number of operations:
-local c1_ops = nk0*nk1*is1^2*(imSize-is1+1)^2 -- convolution operations
+local opmac = 2 -- ops per MAC
+local c1_ops = opmac * nk0*nk1*is1^2*(imSize-is1+1)^2 -- convolution operations
 local p1_ops = nk1*ss1^2*((imSize-is1+1)-ss1+1)^2 -- pooling operations (general, not just max)
-local n1_ops = nk1*(((imSize-is1+1)-ss1+1)/2)^2*9 -- nonlinear operations, 9 segments linear approximations
-local net_ops = c1_ops + p1_ops + n1_ops -- all network operations summed
-local t_ops = 2*net_ops -- multiply and accumulate = 2 operations
+local n1_ops = opmac * nk1*(((imSize-is1+1)-ss1+1)/2)^2 -- nonlinear operations, 1 segment linear approximations
+local t_ops = c1_ops + p1_ops + n1_ops -- total network operations 
 print('Number of operations in test network: [G]', t_ops/1e9)
 
 -- input tensor:
